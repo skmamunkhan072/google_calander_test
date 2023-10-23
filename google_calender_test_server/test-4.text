@@ -1,0 +1,43 @@
+const admin = require("firebase-admin");
+const express = require("express");
+const app = express();
+
+// Initialize Firebase Admin SDK
+const serviceAccount = require("path/to/your/serviceAccountKey.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+app.use(express.json());
+
+app.get("/verifyIdToken", async (req, res) => {
+  const idToken = req.headers.idtoken;
+
+  try {
+    // Verify the Firebase ID token and get the user's UID
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const uid = decodedToken.uid;
+
+    // Exchange the Firebase ID token for a Google access token (Assuming you have the customClaims set)
+    const auth = await admin.auth().getUser(uid);
+
+    if (auth && auth.customClaims && auth.customClaims.googleAccessToken) {
+      const googleAccessToken = auth.customClaims.googleAccessToken;
+
+      // Send the Google access token to the frontend
+      res.status(200).json({ googleAccessToken });
+    } else {
+      console.error("Google access token not found in custom claims.");
+      res.status(500).send("Google access token not found in custom claims.");
+    }
+  } catch (error) {
+    console.error("Error exchanging Firebase ID token for Google access token:", error);
+    res.status(500).send("Error exchanging Firebase ID token for Google access token");
+  }
+});
+
+// Start the Express app
+const port = 3000;
+app.listen(port, () => {
+  console.log(`App listening on port ${port}`);
+});
