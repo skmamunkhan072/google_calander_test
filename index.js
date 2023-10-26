@@ -1,11 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const { google } = require("googleapis");
 const { v4: uuidv4 } = require("uuid");
 const dayjs = require("dayjs");
 const admin = require("firebase-admin");
 dotenv.config();
+const { google } = require("googleapis");
 const serviceAccount = require("./admin/fir-authcalendertest-4ca25-5d7d4e5b8a94.json");
 // const axios = require("axios");
 
@@ -79,7 +79,7 @@ app.post("/create-google-calendar-event", (req, res) => {
   calendar.events.insert(
     {
       auth: jwtClient,
-      calendarId: "primary", // Specify the calendar ID you want to access, we can use user email for  Specific client id and can be get calender list for this user
+      calendarId: "primary", // Specify the calendar ID you want to access, we can use user email for Specific client id and can be get calender list for this user
       resource: {
         summary: "Event Title",
         description: "Event Description",
